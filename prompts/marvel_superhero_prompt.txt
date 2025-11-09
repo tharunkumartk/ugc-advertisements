@@ -1,0 +1,89 @@
+You are creating a short, cinematic Marvel superhero-themed advertisement video about: {topic}
+
+Create a script with EXACTLY {num_scenes} B-roll scenes that tell an epic visual story with heroic voiceover narration.
+The video should be dynamic, action-packed, and under 30 seconds total.
+IMPORTANT: You must return exactly {num_scenes} scenes - no more, no less.
+
+For each scene, provide:
+1. narration: The voiceover text for this scene (what the narrator says)
+   - Each narration should be exactly 30 words. 
+   - Use epic, heroic, and powerful language inspired by Marvel superhero narratives
+   - Keep it dramatic and engaging, but brief
+2. image_prompt: Detailed description of the first frame/static image of the scene
+   - Describe the initial composition with Marvel-inspired aesthetics: dramatic lighting, cinematic compositions, epic scale
+   - Include visual effects in the opening frame: energy glows, lens flares, dramatic shadows, heroic lighting
+   - Be specific about what's shown in the opening frame with superhero movie cinematography
+   - Make it feel like a scene from a Marvel movie - epic, powerful, visually stunning, and hyper realistic
+   - CRITICAL: Each scene must have a drastically different camera angle, perspective, or view from all previous scenes (e.g., switch between close-up, wide shot, overhead, low angle, side view, etc.)
+   - This represents the starting point of the video scene
+3. video_prompt: Detailed description of the epic actions and motion in the video
+   - Describe dynamic camera movements: heroic low angles sweeping up, dramatic tracking shots, epic wide sweeps, dramatic rotations
+   - Include dramatic actions: products rotating with energy effects, dramatic lighting changes, energy particles moving, epic reveals
+   - Be specific about the motion and dynamics with superhero movie cinematography
+   - Make it feel like epic action from a Marvel movie - powerful movements, dramatic effects, and hyper realistic
+   - CRITICAL: Do NOT include any people, hands, or human subjects - focus on products, objects, environments, and their epic movements only
+   - Examples: products rotating with energy auras, dramatic camera sweeps, energy particles swirling, epic lighting transformations, etc.
+4. include_product: Boolean flag (true or false)
+   - Set to true if the product should be prominently featured in this scene
+   - Set to false if this scene should be general B-roll without the product
+   - Typically, set to true for scenes that showcase the product or the final call-to-action scene
+
+Guidelines:
+- Use epic, heroic narration style inspired by Marvel superhero movies, concise (around 10-15 words per scene)
+- Each visual scene should be long enough to match the narration duration
+- Image prompts should describe the static first frame with Marvel-inspired aesthetics and hyper realistic detail
+- Video prompts should describe epic actions, movements, and dramatic motion (no people) with hyper realistic quality
+- Both image and video prompts should be detailed enough for AI generation and emphasize hyper realistic visuals
+- Create a narrative arc that builds like a superhero origin story or epic battle
+- Start with dramatic impact to hook viewers immediately
+- Build tension and excitement throughout
+- End with a powerful conclusion or call-to-action that feels heroic
+- The final scene should include a call-to-action mentioning that viewers can get the product for half the price of Amazon by going to the link in bio
+- Do NOT include any people, hands, or human subjects in image_prompt or video_prompt - focus on products, objects, environments, and their epic movements only
+- Video prompts should include dramatic actions: epic rotations, heroic camera sweeps, energy effects moving, dramatic lighting transformations, etc.
+- Use Marvel-inspired visual language: dramatic lighting, epic compositions, heroic angles, cinematic effects
+- Think of the product as a "superhero tool" or "power-up" - make it feel powerful and transformative
+- IMPORTANT: Ensure each scene has a drastically different camera angle, perspective, or view from all previous scenes to create maximum visual variety and engagement
+
+Example for topic "Premium wireless headphones":
+[
+  {{
+    "narration": "In a world filled with noise, true power comes from clarity.",
+    "image_prompt": "Heroic low-angle shot: Headphones positioned dramatically with blue energy glow effects visible, dramatic shadows creating depth, epic cinematic composition, Marvel-inspired lighting with lens flares",
+    "video_prompt": "Epic camera movement: Camera dramatically sweeping up from low angle, blue energy glow intensifying and pulsing, lens flares dancing across frame, dramatic shadows shifting, epic Marvel movie motion",
+    "include_product": false
+  }},
+  {{
+    "narration": "When ordinary sound becomes extraordinary, that's when legends are born.",
+    "image_prompt": "Medium shot: Headphones positioned in dramatic lighting, energy particles visible floating around them, cinematic depth of field, epic scale and composition",
+    "video_prompt": "Dynamic rotation: Headphones slowly rotating with dramatic lighting following, energy particles swirling and moving around them, camera tracking around the action, epic cinematic motion",
+    "include_product": false
+  }},
+  {{
+    "narration": "Every hero needs the right gear to unlock their full potential.",
+    "image_prompt": "Close-up hero shot: Headphones displayed on a sleek surface with dramatic side lighting creating heroic shadows, energy glow emanating from the product, Marvel movie aesthetic",
+    "video_prompt": "Epic reveal: Energy glow intensifying and pulsing around headphones, dramatic lighting shifting and transforming, camera slowly pushing in, heroic shadows moving, powerful Marvel movie motion",
+    "include_product": true
+  }},
+  {{
+    "narration": "Feel the power surge through you with crystal-clear audio.",
+    "image_prompt": "Epic wide shot: Headphones centered in frame with dramatic backlighting creating a heroic silhouette, energy waves visible in the air, cinematic and powerful composition",
+    "video_prompt": "Dramatic transformation: Energy waves pulsing and expanding outward, backlighting intensifying, camera slowly circling around, heroic silhouette becoming more defined, epic power surge motion",
+    "include_product": true
+  }},
+  {{
+    "narration": "This isn't just technology, it's a superpower waiting to be unleashed.",
+    "image_prompt": "Dynamic overhead shot: Headphones with dramatic lighting from multiple angles, energy effects creating an aura around the product, epic Marvel-inspired composition",
+    "video_prompt": "Epic rotation: Headphones rotating dramatically with energy aura expanding and contracting, dramatic lighting shifting from multiple angles, camera orbiting around, powerful Marvel movie motion",
+    "include_product": true
+  }},
+  {{
+    "narration": "Get these legendary headphones for half the price of Amazon - power up now, link in bio!",
+    "image_prompt": "Heroic medium shot: Headphones displayed prominently with dramatic lighting, text overlay area suggested, epic call-to-action composition, Marvel movie finale aesthetic",
+    "video_prompt": "Finale motion: Camera dramatically circling around headphones, energy effects intensifying, dramatic lighting pulsing, epic reveal motion, powerful Marvel movie finale action",
+    "include_product": true
+  }}
+]
+
+Return ONLY valid JSON matching this structure. Do not include any markdown formatting or code blocks.
+

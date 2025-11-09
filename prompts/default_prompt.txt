@@ -1,0 +1,84 @@
+You are creating a short, cinematic social media video about: {topic}
+
+Create a script with EXACTLY {num_scenes} B-roll scenes that tell a visual story with voiceover narration.
+The video should be engaging, visually compelling, and under 30 seconds total.
+IMPORTANT: You must return exactly {num_scenes} scenes - no more, no less.
+
+For each scene, provide:
+1. narration: The voiceover text for this scene (what the narrator says)
+   - Each narration should be concise and impactful (around 10-15 words)
+   - Keep it natural and conversational, but brief
+2. image_prompt: Detailed description of the first frame/static image of the scene
+   - Describe the initial composition, lighting, mood, and key visual elements
+   - Be specific about what's shown in the opening frame
+   - Make it cinematic, visually interesting, and hyper realistic
+   - CRITICAL: Each scene must have a drastically different camera angle, perspective, or view from all previous scenes (e.g., switch between close-up, wide shot, overhead, low angle, side view, etc.)
+   - This represents the starting point of the video scene
+3. video_prompt: Detailed description of the actions and motion in the video
+   - Describe what happens during the video: camera movements (pan, zoom, tracking shot, etc.), object movements, dynamic changes
+   - Include dramatic actions, movements, transitions, or effects that occur
+   - Be specific about the motion and dynamics
+   - Make it engaging with interesting actions and movements, hyper realistic
+   - CRITICAL: Do NOT include any people, hands, or human subjects - focus on products, objects, environments, and their movements only
+   - Examples: products rotating, camera tracking movements, dramatic lighting changes, objects moving through space, etc.
+4. include_product: Boolean flag (true or false)
+   - Set to true if the product should be prominently featured in this scene
+   - Set to false if this scene should be general B-roll without the product
+   - Typically, set to true for scenes that showcase the product or the final call-to-action scene
+
+Guidelines:
+- Each narration should be exactly 30 words. 
+- Each visual scene should be long enough to match the narration duration
+- Image prompts should describe the static first frame of the scene with hyper realistic detail
+- Video prompts should describe dynamic actions, movements, and motion (no people) with hyper realistic quality
+- Both image and video prompts should be detailed enough for AI generation and emphasize hyper realistic visuals
+- Create a narrative arc across all scenes
+- Start strong to hook viewers
+- End with a memorable conclusion or call-to-action
+- The final scene should include a call-to-action mentioning that viewers can get the product for half the price of Amazon by going to the link in bio
+- Do NOT include any people, hands, or human subjects in image_prompt or video_prompt - focus on products, objects, environments, and their movements only
+- Video prompts should include dramatic actions: rotations, camera movements, lighting changes, object movements, etc.
+- IMPORTANT: Ensure each scene has a drastically different camera angle, perspective, or view from all previous scenes to create maximum visual variety and engagement
+
+Example for topic "The beauty of morning coffee":
+[
+  {{
+    "narration": "There's something magical about that first sip of coffee in the morning.",
+    "image_prompt": "Close-up: White ceramic coffee cup on a wooden table, golden morning sunlight streaming through a nearby window creating lens flare, soft focus background, steam visible rising from the cup",
+    "video_prompt": "Slow motion: Steam dramatically rising and swirling from the coffee cup, camera slowly pushing in closer, lens flares dancing across the frame, soft focus background gently shifting",
+    "include_product": false
+  }},
+  {{
+    "narration": "The rich aroma fills the room, waking up your senses.",
+    "image_prompt": "Overhead shot: French press positioned above a coffee cup, dark coffee visible inside, warm ambient lighting, clean composition",
+    "video_prompt": "Dramatic pour: Dark coffee cascading from French press into cup, creating mesmerizing swirls and patterns, camera slowly rotating around the action, steam rising and swirling",
+    "include_product": false
+  }},
+  {{
+    "narration": "It's not just a drink, it's a ritual.",
+    "image_prompt": "Medium shot: Coffee cup placed on a windowsill with soft morning light streaming through the window, cozy sweater draped nearby, peaceful composition",
+    "video_prompt": "Gentle camera movement: Camera slowly tracking along the windowsill, morning light shifting and dancing across surfaces, steam rising from cup, peaceful and contemplative motion",
+    "include_product": false
+  }},
+  {{
+    "narration": "A moment of peace before the day begins.",
+    "image_prompt": "Wide establishing shot: Cozy kitchen interior with sunrise visible through large windows, coffee setup on counter, plants in background, warm and inviting atmosphere",
+    "video_prompt": "Slow pan: Camera smoothly panning across the kitchen, sunrise light gradually brightening, plants gently swaying, warm and inviting atmosphere with subtle movements",
+    "include_product": false
+  }},
+  {{
+    "narration": "Make time for the little things that bring you joy.",
+    "image_prompt": "Close-up: Coffee cup positioned toward camera, steam visible, out of focus greenery in background, inspirational composition",
+    "video_prompt": "Dynamic tracking: Coffee cup slowly rotating and tilting toward camera, steam dramatically rising and swirling, camera tracking around the cup, background gently shifting focus",
+    "include_product": true
+  }},
+  {{
+    "narration": "Get this premium coffee setup for half the price of Amazon - check the link in bio!",
+    "image_prompt": "Medium shot: Coffee setup displayed beautifully on counter with product clearly visible, text overlay area suggested, bright and inviting lighting",
+    "video_prompt": "Elegant reveal: Camera slowly circling around the coffee setup, products rotating to show different angles, lighting gradually brightening, smooth and polished movement",
+    "include_product": true
+  }}
+]
+
+Return ONLY valid JSON matching this structure. Do not include any markdown formatting or code blocks.
+
