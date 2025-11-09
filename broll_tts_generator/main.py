@@ -12,7 +12,7 @@ from typing import Dict
 from datetime import datetime
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
-from .config import OPENAI_API_KEY, KIE_AI_API_KEY, ELEVEN_LABS_API_KEY
+from .config import OPENAI_API_KEY, XAI_API_KEY, KIE_AI_API_KEY, ELEVEN_LABS_API_KEY
 from .script_generator import generate_broll_script
 from .tts_generator import generate_tts_audio
 from .music_generator import generate_music
@@ -37,6 +37,7 @@ def generate_broll_video_with_tts(
     upload_supabase: bool = False,
     enable_music: bool = True,
     music_model: str = "V5",
+    use_xai: bool = False,
 ) -> Dict:
     """
     Complete B-roll + TTS video generation pipeline.
@@ -55,6 +56,7 @@ def generate_broll_video_with_tts(
         upload_supabase: If True, upload final video to Supabase bucket (default: False)
         enable_music: If True, generate background music (default: True)
         music_model: AI model version for music generation (V3_5, V4, V4_5, V4_5PLUS, V5) (default: V5)
+        use_xai: If True, use xAI API for text generation instead of OpenAI (default: False)
 
     Returns:
         Dictionary with paths to generated files
@@ -96,7 +98,9 @@ def generate_broll_video_with_tts(
             print("=" * 60 + "\n")
 
         # Step 1: Generate script
-        script_data = generate_broll_script(topic, num_scenes, prompt_file=prompt_file)
+        script_data = generate_broll_script(
+            topic, num_scenes, prompt_file=prompt_file, use_xai=use_xai
+        )
         script_path = os.path.join(output_dir, f"broll_script_{timestamp}.json")
         with open(script_path, "w") as f:
             json.dump(script_data, f, indent=2)
@@ -269,6 +273,11 @@ def main():
         help="Generate a new themed prompt template with the given theme name (e.g., 'space', 'ocean'). The generated prompt will be saved to prompts/ and used for video generation.",
     )
     parser.add_argument(
+        "--use-xai",
+        action="store_true",
+        help="Use xAI API for text generation instead of OpenAI (requires XAI_API_KEY)",
+    )
+    parser.add_argument(
         "--eleven-labs",
         action="store_true",
         help="Use ElevenLabs API for TTS instead of OpenAI (requires ELEVEN_LABS_API_KEY)",
@@ -318,12 +327,21 @@ def main():
 
     # Check for required API keys (skip in dry run mode for video generation)
     missing_keys = []
+    # Check for text generation API key
+    if args.use_xai:
+        if not XAI_API_KEY:
+            missing_keys.append("XAI_API_KEY")
+    else:
+        if not OPENAI_API_KEY:
+            missing_keys.append("OPENAI_API_KEY")
+    # Check for TTS API key
     if args.eleven_labs:
         if not ELEVEN_LABS_API_KEY:
             missing_keys.append("ELEVEN_LABS_API_KEY")
     else:
+        # Need OpenAI API key for TTS if not using ElevenLabs
         if not OPENAI_API_KEY:
-            missing_keys.append("OPENAI_API_KEY")
+            missing_keys.append("OPENAI_API_KEY (for TTS)")
     # KIE_AI_API_KEY needed for video generation (unless dry run) or music generation
     needs_kie_api = (not args.dry_run) or (not args.no_music)
     if needs_kie_api and not KIE_AI_API_KEY:
@@ -405,6 +423,7 @@ def main():
                     upload_supabase=args.upload_supabase,
                     enable_music=not args.no_music,
                     music_model=args.music_model,
+                    use_xai=args.use_xai,
                 ): prompt_file.name
                 for prompt_file in prompt_files
             }
@@ -450,6 +469,7 @@ def main():
             generated_prompt = generate_themed_prompt(
                 theme=args.new_prompt,
                 topic=args.topic,
+                use_xai=args.use_xai,
             )
 
             # Save the prompt to prompts folder
@@ -491,6 +511,7 @@ def main():
         upload_supabase=args.upload_supabase,
         enable_music=not args.no_music,
         music_model=args.music_model,
+        use_xai=args.use_xai,
     )
 
     if "error" in results:
