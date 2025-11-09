@@ -39,7 +39,7 @@ Guidelines:
 - Gradually reveal connections between the mysterious story and the product
 - The revelation should feel surprising but logical - like a plot twist that ties everything together
 - End with a memorable conclusion that connects the suspenseful story back to the product
-- The final scene should include a call-to-action mentioning that viewers can get the product for half the price of Amazon by going to the link in bio
+- The final scene should include a call-to-action mentioning that viewers can check it out for half the price of amazon on link in bio
 - Do NOT include any people, hands, or human subjects in image_prompt or video_prompt - focus on products, objects, environments, and their movements only
 - Video prompts should include dramatic actions: rotations, camera movements, lighting changes, object movements, etc.
 - IMPORTANT: Ensure each scene has a drastically different camera angle, perspective, or view from all previous scenes to create maximum visual variety and engagement
@@ -77,7 +77,7 @@ Example for topic "The beauty of morning coffee":
     "include_product": true
   }},
   {{
-    "narration": "Get this premium coffee setup for half the price of Amazon - unlock the secret, link in bio!",
+    "narration": "Check it out for half the price of amazon on link in bio!",
     "image_prompt": "Hero shot: Coffee setup displayed beautifully with dramatic lighting, text overlay area suggested, the suspenseful story now fully connected to the product",
     "video_prompt": "Finale reveal: Camera dramatically circling around the coffee setup, products rotating, dramatic lighting intensifying, completing the suspenseful narrative arc",
     "include_product": true

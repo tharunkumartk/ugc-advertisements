@@ -35,7 +35,7 @@ def generate_broll_video_with_tts(
     use_eleven_labs: bool = False,
     remove_bg: bool = False,
     upload_supabase: bool = False,
-    generate_music: bool = True,
+    enable_music: bool = True,
     music_model: str = "V5",
 ) -> Dict:
     """
@@ -53,7 +53,7 @@ def generate_broll_video_with_tts(
         use_eleven_labs: If True, use ElevenLabs API for TTS instead of OpenAI (default: False)
         remove_bg: If True, remove background from product image before processing (default: False)
         upload_supabase: If True, upload final video to Supabase bucket (default: False)
-        generate_music: If True, generate background music (default: True)
+        enable_music: If True, generate background music (default: True)
         music_model: AI model version for music generation (V3_5, V4, V4_5, V4_5PLUS, V5) (default: V5)
 
     Returns:
@@ -114,7 +114,7 @@ def generate_broll_video_with_tts(
 
         # Step 2.5: Generate background music (if enabled)
         background_music_path = None
-        if generate_music:
+        if enable_music:
             try:
                 music_prompt = script_data.get("musicGenerationPrompt", "")
                 music_style = script_data.get("musicStyle", "Ambient")
@@ -403,7 +403,7 @@ def main():
                     use_eleven_labs=args.eleven_labs,
                     remove_bg=args.remove_background,
                     upload_supabase=args.upload_supabase,
-                    generate_music=not args.no_music,
+                    enable_music=not args.no_music,
                     music_model=args.music_model,
                 ): prompt_file.name
                 for prompt_file in prompt_files
@@ -489,7 +489,7 @@ def main():
         use_eleven_labs=args.eleven_labs,
         remove_bg=args.remove_background,
         upload_supabase=args.upload_supabase,
-        generate_music=not args.no_music,
+        enable_music=not args.no_music,
         music_model=args.music_model,
     )
 

@@ -1,6 +1,9 @@
 scratch/
 output/
 old_output/
+prompts/
+!prompts/default_prompt.txt
+
 # Byte-compiled / optimized / compiled files
 __pycache__/
 *.py[cod]

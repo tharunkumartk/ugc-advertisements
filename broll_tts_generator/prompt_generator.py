@@ -1,7 +1,7 @@
 """
 Prompt Generation Module
 
-Generates new themed prompt templates using OpenAI API based on default and example prompts.
+Generates new themed prompt templates using OpenAI API based on default prompt.
 """
 
 import os
@@ -16,8 +16,7 @@ def generate_themed_prompt(
     theme: str,
     topic: Optional[str] = None,
     default_prompt_file: str = "prompts/default_prompt.txt",
-    example_prompt_file: str = "prompts/zoo_theme_prompt.txt",
-    model: str = "gpt-4o",
+    model: str = "gpt-5",
 ) -> str:
     """
     Generate a new themed prompt template using OpenAI API.
@@ -26,7 +25,6 @@ def generate_themed_prompt(
         theme: The theme name (e.g., "space", "ocean", "forest")
         topic: Optional topic to include in the generation context
         default_prompt_file: Path to the default prompt template
-        example_prompt_file: Path to an example themed prompt (zoo theme)
         model: OpenAI model to use (default: gpt-4o)
 
     Returns:
@@ -46,29 +44,18 @@ def generate_themed_prompt(
     except FileNotFoundError:
         raise FileNotFoundError(f"Default prompt file not found: {default_prompt_path}")
 
-    # Read the example themed prompt
-    example_prompt_path = script_dir / example_prompt_file
-    try:
-        with open(example_prompt_path, "r") as f:
-            example_prompt = f.read()
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Example prompt file not found: {example_prompt_path}")
-
     # Create the generation prompt
     generation_prompt = f"""You are an expert at creating prompt templates for AI video generation.
 
-I need you to create a new prompt template that follows the same structure and quality standards as the examples provided, but with a different theme: "{theme}".
+I need you to create a new prompt template that follows the same structure and quality standards as the default prompt, but with a different theme: "{theme}".
 
 Here is the DEFAULT prompt template (base structure):
 {default_prompt}
 
-Here is an EXAMPLE of a themed prompt (zoo theme) that shows how to adapt the default:
-{example_prompt}
-
 Your task:
 1. Create a new prompt template with the theme: "{theme}"
 2. Maintain the EXACT same structure, format, and output requirements as the default prompt
-3. Adapt the language, visual descriptions, and examples to match the "{theme}" theme, similar to how the zoo theme was adapted
+3. Adapt the language, visual descriptions, and examples to match the "{theme}" theme
 4. Keep all the critical requirements (exactly {{num_scenes}} scenes, 30 words per narration, no people/hands, different camera angles, etc.)
 5. Include a complete example JSON structure at the end with the theme applied
 6. Use the same formatting and placeholders ({{topic}}, {{num_scenes}})
@@ -83,7 +70,9 @@ The generated prompt should:
 Return ONLY the prompt template text, without any markdown formatting, code blocks, or explanations."""
 
     if topic:
-        generation_prompt += f"\n\nNote: The prompt will be used for videos about: {topic}"
+        generation_prompt += (
+            f"\n\nNote: The prompt will be used for videos about: {topic}"
+        )
 
     print(f"\n{'=' * 60}")
     print(f"Generating prompt template with theme: {theme}")
@@ -100,7 +89,6 @@ Return ONLY the prompt template text, without any markdown formatting, code bloc
             },
             {"role": "user", "content": generation_prompt},
         ],
-        temperature=0.7,
     )
 
     generated_prompt = response.choices[0].message.content.strip()
@@ -153,4 +141,3 @@ def save_prompt_template(
     print(f"✓ Prompt template saved to: {file_path}")
 
     return file_path
-

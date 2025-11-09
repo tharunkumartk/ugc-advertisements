@@ -60,9 +60,13 @@ def generate_music(
         "model": model,
     }
     
-    # Add callback URL if provided, otherwise we'll poll
+    # API requires callback URL, but we'll use polling mode
+    # Provide a placeholder URL if none is provided (we'll poll instead)
     if callback_url:
         payload["callBackUrl"] = callback_url
+    else:
+        # Use a placeholder URL to satisfy API requirement, but we'll poll for results
+        payload["callBackUrl"] = "https://placeholder.example.com/callback"
     
     # Make API request
     headers = {
@@ -82,9 +86,21 @@ def generate_music(
         raise ValueError(f"Music generation API error ({response.status_code}): {error_msg}")
     
     result = response.json()
-    task_id = result.get("data", {}).get("taskId")
+    
+    # Check for error codes in JSON response (API may return HTTP 200 with error in body)
+    error_code = result.get("code")
+    if error_code and error_code != 200:
+        error_msg = result.get("msg", "Unknown error")
+        raise ValueError(f"Music generation API error (code {error_code}): {error_msg}")
+    
+    # Handle case where API returns {"data": None} - use empty dict as fallback
+    data = result.get("data") or {}
+    task_id = data.get("taskId")
     
     if not task_id:
+        # Debug: print the actual API response to help diagnose the issue
+        print(f"⚠️  Debug: API response: {result}")
+        print(f"⚠️  Debug: Response data: {data}")
         raise ValueError("No task ID returned from music generation API")
     
     print(f"✓ Music generation task created: {task_id}")
@@ -122,88 +138,70 @@ def _poll_for_completion(task_id: str, headers: dict, max_wait_time: int = 300, 
     """
     start_time = time.time()
     
-    # Try multiple possible endpoints
-    endpoints_to_try = [
-        f"https://api.kie.ai/api/v1/music/{task_id}",
-        f"https://api.kie.ai/api/v1/music/details/{task_id}",
-        f"https://api.kie.ai/api/v1/music/task/{task_id}",
-    ]
+    # Use the correct endpoint for checking task status
+    endpoint = f"https://api.kie.ai/api/v1/generate/record-info?taskId={task_id}"
     
     while time.time() - start_time < max_wait_time:
-        for endpoint in endpoints_to_try:
-            try:
-                response = requests.get(endpoint, headers=headers, timeout=10)
+        try:
+            response = requests.get(endpoint, headers=headers, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
                 
-                if response.status_code == 200:
-                    data = response.json()
+                # Check for error codes in JSON response
+                error_code = result.get("code")
+                if error_code and error_code != 200:
+                    error_msg = result.get("msg", "Unknown error")
+                    raise ValueError(f"Music generation API error (code {error_code}): {error_msg}")
+                
+                # Extract data from response
+                data = result.get("data") or {}
+                status = data.get("status")
+                
+                # Check if task is complete (TEXT_SUCCESS indicates completion)
+                if status == "TEXT_SUCCESS":
+                    # Extract audio URL from nested response structure
+                    response_data = data.get("response", {})
+                    suno_data = response_data.get("sunoData", [])
                     
-                    # Handle different response structures
-                    status = None
-                    audio_url = None
-                    
-                    # Try different response formats
-                    if "data" in data:
-                        status_data = data["data"]
-                        status = status_data.get("status") or status_data.get("state")
+                    if suno_data and len(suno_data) > 0:
+                        # Prefer streamAudioUrl, fallback to sourceStreamAudioUrl
+                        track = suno_data[0]
+                        audio_url = track.get("streamAudioUrl") or track.get("sourceStreamAudioUrl")
                         
-                        # Try to get audio URL from various possible locations
-                        audio_url = (
-                            status_data.get("audioUrl") or 
-                            status_data.get("audio_url") or
-                            status_data.get("url") or
-                            status_data.get("downloadUrl") or
-                            status_data.get("download_url")
-                        )
-                        
-                        # Check tracks array
-                        if not audio_url:
-                            tracks = status_data.get("tracks", [])
-                            if tracks and len(tracks) > 0:
-                                track = tracks[0]
-                                audio_url = (
-                                    track.get("audioUrl") or 
-                                    track.get("audio_url") or
-                                    track.get("url") or
-                                    track.get("downloadUrl") or
-                                    track.get("download_url")
-                                )
-                    else:
-                        # Direct response structure
-                        status = data.get("status") or data.get("state")
-                        audio_url = (
-                            data.get("audioUrl") or 
-                            data.get("audio_url") or
-                            data.get("url")
-                        )
-                    
-                    if status == "complete" or status == "success":
                         if audio_url:
+                            print(f"  ✓ Music generation completed!")
                             return audio_url
                         else:
-                            print(f"  Status complete but no audio URL found in response")
-                            # Continue polling, might be in progress
-                    
-                    elif status in ["failed", "error", "fail"]:
-                        error_msg = data.get("msg") or data.get("message") or "Unknown error"
-                        raise ValueError(f"Music generation failed: {error_msg}")
-                    
-                    elif status:
-                        # Still processing
-                        elapsed = int(time.time() - start_time)
-                        print(f"  Status: {status}... (elapsed: {elapsed}s)")
-                        break  # Found working endpoint, break from endpoint loop
+                            raise ValueError("Music generation completed but no audio URL found in sunoData")
+                    else:
+                        raise ValueError("Music generation completed but no sunoData found in response")
                 
-                elif response.status_code == 404:
-                    # Try next endpoint
-                    continue
+                elif status in ["failed", "error", "fail", "TEXT_FAIL"]:
+                    error_msg = data.get("errorMessage") or result.get("msg") or "Unknown error"
+                    raise ValueError(f"Music generation failed: {error_msg}")
                 
+                elif status:
+                    # Still processing
+                    elapsed = int(time.time() - start_time)
+                    print(f"  Status: {status}... (elapsed: {elapsed}s)")
                 else:
-                    # Try next endpoint on other errors
-                    continue
-                    
-            except requests.RequestException as e:
-                # Try next endpoint
-                continue
+                    # No status field, might be still processing
+                    elapsed = int(time.time() - start_time)
+                    print(f"  Waiting for completion... (elapsed: {elapsed}s)")
+            
+            elif response.status_code == 404:
+                # Task not found yet, might still be processing
+                elapsed = int(time.time() - start_time)
+                print(f"  Task not found yet, waiting... (elapsed: {elapsed}s)")
+            
+            else:
+                error_msg = response.text[:200] if response.text else "Unknown error"
+                print(f"  ⚠️  Unexpected response ({response.status_code}): {error_msg}")
+                
+        except requests.RequestException as e:
+            elapsed = int(time.time() - start_time)
+            print(f"  ⚠️  Request error: {str(e)} (elapsed: {elapsed}s)")
         
         time.sleep(poll_interval)
     
