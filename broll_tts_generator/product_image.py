@@ -80,6 +80,55 @@ def generate_product_image(
     return _extract_image_bytes(response)
 
 
+def remove_background(product_image_path: str, output_path: str = "product_bg_rm.png") -> str:
+    """Remove background from product image using Gemini 2.5 Flash.
+    
+    Args:
+        product_image_path: Path to the product image file.
+        output_path: Path where the background-removed image will be saved.
+    
+    Returns:
+        Path to the saved background-removed image.
+    
+    Raises:
+        FileNotFoundError: If product_image_path doesn't exist.
+        GeminiImageError: If the Gemini API fails to return an image payload.
+    """
+    if not os.path.exists(product_image_path):
+        raise FileNotFoundError(f"Product image not found: {product_image_path}")
+    
+    # Load product image
+    product_image = Image.open(product_image_path)
+    product_image.load()  # Ensure image is fully loaded
+    
+    # Initialize Gemini client
+    client = genai.Client()
+    
+    # Use Gemini 2.5 Flash to remove background
+    model = "gemini-2.5-flash-image"
+    prompt = "Remove the background from this product image. Keep only the product itself with a transparent background. Make sure the product edges are clean and sharp."
+    
+    config = types.GenerateContentConfig(
+        image_config=types.ImageConfig(
+            aspect_ratio="9:16",
+        )
+    )
+    response = client.models.generate_content(
+        model=model,
+        contents=[product_image, prompt],
+        config=config,
+    )
+    
+    # Extract image bytes
+    image_bytes = _extract_image_bytes(response)
+    
+    # Save the background-removed image
+    with open(output_path, "wb") as f:
+        f.write(image_bytes)
+    
+    return output_path
+
+
 def upload_image_to_tmpfiles(image_path: str) -> str:
     """
     Upload an image file to tmpfiles.org and return the public download URL.

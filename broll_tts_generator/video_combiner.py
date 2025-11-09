@@ -45,8 +45,23 @@ def get_video_duration(video_path: str) -> float:
     return float(result.stdout.strip())
 
 
-def combine_broll_with_audio(broll_paths: List[str], audio_path: str, output_path: str):
-    """Combine B-roll videos and add TTS audio."""
+def combine_broll_with_audio(
+    broll_paths: List[str], 
+    audio_path: str, 
+    output_path: str, 
+    background_music_path: str = None,
+    music_volume: float = 0.15
+):
+    """
+    Combine B-roll videos and add TTS audio with optional background music.
+    
+    Args:
+        broll_paths: List of paths to B-roll video files
+        audio_path: Path to TTS narration audio file
+        output_path: Path for the final output video
+        background_music_path: Optional path to background music file
+        music_volume: Volume level for background music (0.0-1.0, default: 0.15 for quiet)
+    """
     print("\n" + "=" * 60)
     print("STEP 4: Combining B-Roll Videos with Audio")
     print("=" * 60)
@@ -58,6 +73,9 @@ def combine_broll_with_audio(broll_paths: List[str], audio_path: str, output_pat
     audio_duration = get_audio_duration(audio_path)
     print(f"Audio duration: {audio_duration:.2f} seconds")
     print(f"Number of B-roll clips: {len(broll_paths)}")
+    
+    if background_music_path:
+        print(f"Background music: {background_music_path} (volume: {music_volume})")
 
     # Create temporary concat file for FFmpeg
     temp_dir = tempfile.mkdtemp()
@@ -139,13 +157,70 @@ def combine_broll_with_audio(broll_paths: List[str], audio_path: str, output_pat
     print("Concatenating B-roll clips...")
     subprocess.run(cmd, check=True, capture_output=True)
 
-    # Combine with audio
+    # Combine with audio (and background music if provided)
+    if background_music_path and os.path.exists(background_music_path):
+        # Mix TTS audio with background music
+        # Background music should be quieter and loop/extend to match narration duration
+        print("Mixing TTS audio with background music...")
+        
+        # First, extend/loop background music to match narration duration if needed
+        music_duration = get_audio_duration(background_music_path)
+        extended_music = os.path.join(temp_dir, "extended_music.mp3")
+        
+        if music_duration < audio_duration:
+            # Loop the music to match narration duration
+            loops_needed = int(audio_duration / music_duration) + 1
+            cmd = [
+                "ffmpeg",
+                "-stream_loop", str(loops_needed),
+                "-i", background_music_path,
+                "-t", str(audio_duration),
+                "-c:a", "aac",
+                extended_music,
+                "-y",
+            ]
+            subprocess.run(cmd, check=True, capture_output=True)
+            music_to_use = extended_music
+        else:
+            # Trim music to match narration duration
+            cmd = [
+                "ffmpeg",
+                "-i", background_music_path,
+                "-t", str(audio_duration),
+                "-c:a", "aac",
+                extended_music,
+                "-y",
+            ]
+            subprocess.run(cmd, check=True, capture_output=True)
+            music_to_use = extended_music
+        
+        # Mix TTS (foreground) with background music (quieter)
+        # Use amix filter to mix two audio tracks
+        mixed_audio = os.path.join(temp_dir, "mixed_audio.mp3")
+        cmd = [
+            "ffmpeg",
+            "-i", audio_path,  # TTS narration (foreground)
+            "-i", music_to_use,  # Background music
+            "-filter_complex",
+            f"[0:a]volume=1.0[a0];[1:a]volume={music_volume}[a1];[a0][a1]amix=inputs=2:duration=first:dropout_transition=2",
+            "-c:a", "aac",
+            "-b:a", "192k",
+            mixed_audio,
+            "-y",
+        ]
+        subprocess.run(cmd, check=True, capture_output=True)
+        final_audio = mixed_audio
+    else:
+        final_audio = audio_path
+        print("Adding TTS audio to video...")
+    
+    # Combine video with mixed audio
     cmd = [
         "ffmpeg",
         "-i",
         temp_video,
         "-i",
-        audio_path,
+        final_audio,
         "-c:v",
         "copy",
         "-c:a",
@@ -159,7 +234,10 @@ def combine_broll_with_audio(broll_paths: List[str], audio_path: str, output_pat
         "-y",
     ]
 
-    print("Adding TTS audio to video...")
+    if background_music_path:
+        print("Adding mixed audio (TTS + background music) to video...")
+    else:
+        print("Adding TTS audio to video...")
     subprocess.run(cmd, check=True, capture_output=True)
 
     print(f"✓ Final video created: {output_path}")

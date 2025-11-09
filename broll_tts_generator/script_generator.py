@@ -37,8 +37,8 @@ def generate_broll_script_prompt(
     except FileNotFoundError:
         raise FileNotFoundError(f"Prompt file not found: {prompt_path}")
 
-    # Format the template with topic and num_scenes
-    return prompt_template.format(topic=topic, num_scenes=num_scenes)
+    # Replace placeholders with actual values (using replace instead of format to avoid issues with JSON braces)
+    return prompt_template.replace("{topic}", topic).replace("{num_scenes}", str(num_scenes))
 
 
 def generate_broll_script(
@@ -78,9 +78,21 @@ def generate_broll_script(
                     ],
                     "additionalProperties": False,
                 },
+            },
+            "musicGenerationPrompt": {
+                "type": "string",
+                "description": "Description for generating background music that matches the overall mood and theme of all scenes"
+            },
+            "musicStyle": {
+                "type": "string",
+                "description": "Music style/genre for the background music (e.g., 'Ambient', 'Cinematic', 'Electronic', 'Classical')"
+            },
+            "musicTitle": {
+                "type": "string",
+                "description": "Title for the background music track"
             }
         },
-        "required": ["scenes"],
+        "required": ["scenes", "musicGenerationPrompt", "musicStyle", "musicTitle"],
         "additionalProperties": False,
     }
 

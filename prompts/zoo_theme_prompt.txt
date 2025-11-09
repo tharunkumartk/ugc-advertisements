@@ -34,10 +34,13 @@ Guidelines:
 - Image prompts should describe the static first frame with zoo-inspired aesthetics and hyper realistic detail
 - Video prompts should describe actions, movements, and exploration motion (no people) with hyper realistic quality
 - Both image and video prompts should be detailed enough for AI generation and emphasize hyper realistic visuals
-- Create a narrative arc that builds like discovering amazing exhibits at a zoo
-- Start with curiosity and wonder to hook viewers immediately
-- Build excitement and discovery throughout
-- End with a memorable conclusion or call-to-action
+- Create an EXTREMELY SUSPENSEFUL narrative arc that builds like discovering a mysterious secret at a zoo
+- CRITICAL STORYTELLING APPROACH: Start with a mysterious hook like "Do you know about the story of X?" or "Have you ever heard about X?" that seems completely unrelated to the product
+- Build suspense by exploring this seemingly unrelated mysterious story or legend
+- Create tension and curiosity - make viewers wonder where this is going
+- Gradually reveal connections between the mysterious story and the product
+- The revelation should feel surprising but logical - like a plot twist that ties everything together
+- End with a memorable conclusion that connects the suspenseful story back to the product
 - The final scene should include a call-to-action mentioning that viewers can get the product for half the price of Amazon by going to the link in bio
 - Do NOT include any people, hands, or human subjects in image_prompt or video_prompt - focus on products, objects, environments, and their natural movements only
 - Video prompts should include engaging actions: rotations, camera exploration, natural element movements, playful reveals, etc.
@@ -48,42 +51,47 @@ Guidelines:
 Example for topic "Premium portable speaker":
 [
   {{
-    "narration": "Step into a world where every sound comes alive with vibrant energy.",
-    "image_prompt": "Medium shot: Speaker surrounded by lush green plants and natural elements, soft natural lighting filtering through leaves, vibrant colors, zoo exhibit aesthetic",
-    "video_prompt": "Gentle tracking: Camera smoothly moving through the natural setting, plants gently swaying, natural lighting shifting through leaves, vibrant colors, exploring zoo exhibit motion",
+    "narration": "Do you know about the story of the zookeeper who discovered nature's greatest secret?",
+    "image_prompt": "Mysterious wide shot: Dark zoo exhibit at night, shadows dancing across lush vegetation, single beam of moonlight cutting through, mysterious sounds in the distance, suspenseful atmosphere",
+    "video_prompt": "Suspenseful exploration: Camera slowly moving through the dark zoo exhibit, shadows shifting mysteriously, mysterious sounds building, dramatic lighting creating tension, suspenseful atmosphere intensifying",
     "include_product": false
   }},
   {{
-    "narration": "Just like discovering a rare animal, some experiences are truly extraordinary.",
-    "image_prompt": "Medium shot: Speaker displayed on a natural wooden surface with tropical plants in background, warm ambient lighting, organic composition, discovery-focused framing",
-    "video_prompt": "Smooth panning: Camera smoothly panning across the scene, tropical plants gently moving, warm lighting shifting, organic composition revealing details, discovery-focused motion",
+    "narration": "It wasn't a new species or a hidden treasure, but something far more powerful.",
+    "image_prompt": "Close-up: Mysterious object hidden among tropical plants, dramatic side lighting creating deep shadows, vibrant colors contrasting with darkness, the mystery deepening",
+    "video_prompt": "Dramatic reveal: Camera slowly pushing in on the mysterious object, dramatic shadows dancing, vibrant colors becoming clearer, anticipation building",
     "include_product": false
   }},
   {{
-    "narration": "When you find something special, you know it immediately.",
-    "image_prompt": "Close-up: Speaker with natural textures visible, soft natural lighting highlighting details, vibrant colors, zoo discovery moment aesthetic",
-    "video_prompt": "Exploration movement: Camera slowly circling around speaker, natural textures becoming more visible, lighting shifting to highlight details, vibrant colors, discovery motion",
+    "narration": "What they found would change how we experience sound forever.",
+    "image_prompt": "Medium shot: Dark natural setting with a single beam of light illuminating something hidden, lush vegetation creating mystery, suspenseful and dramatic composition",
+    "video_prompt": "Tension building: Camera slowly circling around the mysterious scene, dramatic lighting shifting, shadows moving through vegetation, suspense intensifying as we approach the revelation",
+    "include_product": false
+  }},
+  {{
+    "narration": "It wasn't animal communication, but a way to capture nature's perfect harmony.",
+    "image_prompt": "Overhead shot: Dramatic natural lighting revealing the shape of something revolutionary, lush greenery surrounding it, the connection starting to become clearer",
+    "video_prompt": "Revelation beginning: Camera smoothly panning across the natural scene, dramatic lighting intensifying, mysterious shape becoming clearer, lush vegetation gently moving, the connection starting to reveal itself",
+    "include_product": false
+  }},
+  {{
+    "narration": "That secret? A premium portable speaker that brings nature's perfect sound home.",
+    "image_prompt": "Close-up: Premium portable speaker dramatically revealed among lush greenery, vibrant natural lighting, the suspenseful story now connecting to the product",
+    "video_prompt": "Dramatic reveal: Speaker rotating into frame with dramatic natural lighting, lush greenery surrounding it, camera pushing in, the suspenseful story now connecting to the product",
     "include_product": true
   }},
   {{
-    "narration": "Feel the excitement as crystal-clear audio fills your space.",
-    "image_prompt": "Wide establishing shot: Speaker in a natural setting with plants and organic elements, vibrant colors, documentary-style composition, engaging and lively framing",
-    "video_prompt": "Dynamic exploration: Camera smoothly tracking through the natural setting, plants gently swaying and moving, vibrant colors shifting, engaging and lively motion",
-    "include_product": true
-  }},
-  {{
-    "narration": "This isn't just a speaker, it's your ticket to an audio adventure.",
-    "image_prompt": "Dynamic medium shot: Speaker displayed prominently with lush greenery and natural elements surrounding it, vibrant lighting, playful composition, zoo exhibit showcase aesthetic",
-    "video_prompt": "Playful reveal: Speaker slowly rotating among the natural elements, camera tracking around, lush greenery gently moving, vibrant lighting shifting, playful zoo exhibit motion",
-    "include_product": true
-  }},
-  {{
-    "narration": "Get this amazing speaker for half the price of Amazon - discover the link in bio!",
-    "image_prompt": "Hero shot: Speaker beautifully displayed with natural elements, vibrant colors, text overlay area suggested, exciting call-to-action composition, zoo discovery finale aesthetic",
-    "video_prompt": "Finale movement: Camera smoothly circling around speaker, natural elements gently moving, vibrant colors intensifying, exciting call-to-action motion, zoo discovery finale action",
+    "narration": "Get this amazing speaker for half the price of Amazon - unlock nature's secret, link in bio!",
+    "image_prompt": "Hero shot: Speaker beautifully displayed with natural elements, vibrant colors, text overlay area suggested, exciting call-to-action composition, the suspenseful story now fully connected",
+    "video_prompt": "Finale movement: Camera smoothly circling around speaker, natural elements gently moving, vibrant colors intensifying, exciting call-to-action motion, completing the suspenseful narrative arc",
     "include_product": true
   }}
 ]
+
+Additionally, provide:
+- musicGenerationPrompt: A detailed description for generating background music that matches the overall mood, theme, and suspenseful narrative arc of all scenes. The music should be instrumental, atmospheric, and enhance the cinematic feel. Describe the desired mood, tempo, and emotional tone that complements the video's story. For zoo themes, consider playful, adventurous, and natural musical tones with a sense of discovery and wonder.
+- musicStyle: The music genre/style (e.g., "Ambient", "Cinematic", "Electronic", "Classical", "Dramatic"). Choose a style that matches the overall theme and mood of the video. For zoo themes, consider styles like "Adventurous", "Playful Cinematic", "Natural Ambient", or "Discovery".
+- musicTitle: A creative title for the background music track that reflects the video's theme.
 
 Return ONLY valid JSON matching this structure. Do not include any markdown formatting or code blocks.
 

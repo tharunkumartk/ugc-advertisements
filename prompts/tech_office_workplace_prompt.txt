@@ -1,0 +1,94 @@
+You are creating a short, cinematic social media video about: {topic}
+
+Create a script with EXACTLY {num_scenes} B-roll scenes that tell a visual story with voiceover narration inspired by the innovation and energy of a tech office workplace.
+The video should be engaging, visually compelling, and under 30 seconds total.
+IMPORTANT: You must return exactly {num_scenes} scenes - no more, no less.
+
+For each scene, provide:
+1. narration: The voiceover text for this scene (what the narrator says)
+   - Each narration should be exactly 30 words.
+   - Use language that captures the excitement and innovation of a tech office
+   - Keep it natural and conversational, but brief
+2. image_prompt: Detailed description of the first frame/static image of the scene
+   - Describe the initial composition with tech-inspired aesthetics: modern lighting, sleek designs, dynamic compositions
+   - Include visual elements that evoke tech workplace experiences: gadgets, screens, innovative setups
+   - Be specific about what's shown in the opening frame with cinematic-style cinematography
+   - Make it feel like stepping into an innovative tech environment - sleek, engaging, full of creativity, and hyper realistic
+   - CRITICAL: Each scene must have a drastically different camera angle, perspective, or view from all previous scenes (e.g., switch between close-up, wide shot, overhead, low angle, side view, etc.)
+   - This represents the starting point of the video scene
+3. video_prompt: Detailed description of the actions and motion in the video
+   - Describe camera movements: smooth tracking shots, dynamic pans, exploring angles, innovative reveals
+   - Include actions: products rotating, tech elements moving, camera exploring the scene, dynamic movements
+   - Be specific about the motion and dynamics with cinematic-style cinematography
+   - Make it feel like actively exploring a tech workplace - sleek, engaging, full of innovation, and hyper realistic
+   - CRITICAL: Do NOT include any people, hands, or human subjects - focus on products, objects, environments, and their dynamic movements only
+   - Examples: products rotating among gadgets, camera smoothly tracking through modern settings, screens displaying data, innovative exploration movements, etc.
+4. include_product: Boolean flag (true or false)
+   - Set to true if the product should be prominently featured in this scene
+   - Set to false if this scene should be general B-roll without the product
+   - Typically, set to true for scenes that showcase the product or the final call-to-action scene
+
+Guidelines:
+- Use narration that captures the excitement and innovation of tech exploration, concise (around 10-15 words per scene)
+- Each visual scene should be long enough to match the narration duration
+- Image prompts should describe the static first frame with tech-inspired aesthetics and hyper realistic detail
+- Video prompts should describe actions, movements, and exploration motion (no people) with hyper realistic quality
+- Both image and video prompts should be detailed enough for AI generation and emphasize hyper realistic visuals
+- Create an EXTREMELY SUSPENSEFUL narrative arc that builds like discovering a groundbreaking tech innovation
+- CRITICAL STORYTELLING APPROACH: Start with a mysterious hook like "Do you know about the story of X?" or "Have you ever heard about X?" that seems completely unrelated to the product
+- Build suspense by exploring this seemingly unrelated mysterious story or innovation
+- Create tension and curiosity - make viewers wonder where this is going
+- Gradually reveal connections between the mysterious story and the product
+- The revelation should feel surprising but logical - like a plot twist that ties everything together
+- End with a memorable conclusion that connects the suspenseful story back to the product
+- The final scene should include a call-to-action mentioning that viewers can get the product for half the price of Amazon by going to the link in bio
+- Do NOT include any people, hands, or human subjects in image_prompt or video_prompt - focus on products, objects, environments, and their dynamic movements only
+- Video prompts should include engaging actions: rotations, camera exploration, tech element movements, innovative reveals, etc.
+- Use tech-inspired visual language: modern lighting, sleek designs, dynamic compositions, innovative angles
+- Think of the product as a "revolutionary innovation" or "breakthrough" found during a tech exploration - make it feel exciting and special
+- IMPORTANT: Ensure each scene has a drastically different camera angle, perspective, or view from all previous scenes to create maximum visual variety and engagement
+
+Example for topic "Robot dog advertisement":
+[
+  {
+    "narration": "Have you ever heard about the legendary office that unlocked the secret to seamless teamwork?",
+    "image_prompt": "Mysterious wide shot: Sleek tech office at dawn, screens glowing softly, cutting-edge gadgets on desks, futuristic ambiance, suspenseful and innovative atmosphere",
+    "video_prompt": "Suspenseful exploration: Camera gliding through the modern tech office, screens flickering, gadgets subtly activating, innovative ambiance building, suspenseful atmosphere intensifying",
+    "include_product": false
+  },
+  {
+    "narration": "It wasn't about new software or a hidden algorithm, but something revolutionary.",
+    "image_prompt": "Close-up: Innovative device hidden among sleek office gadgets, dramatic side lighting creating deep contrast, modern designs catching the eye, the mystery intensifying",
+    "video_prompt": "Dramatic reveal: Camera slowly zooming in on the innovative device, shadows shifting, modern designs becoming clearer, anticipation building",
+    "include_product": false
+  },
+  {
+    "narration": "What they found would redefine how we interact with technology forever.",
+    "image_prompt": "Medium shot: Dimly lit office setting with a single beam of light illuminating something advanced, tech gadgets creating intrigue, suspenseful and dramatic composition",
+    "video_prompt": "Tension building: Camera smoothly circling around the advanced scene, tech elements subtly glowing, shadows moving across devices, suspense intensifying as we approach the revelation",
+    "include_product": false
+  },
+  {
+    "narration": "It wasn't just automation, but a way to make tech truly interactive.",
+    "image_prompt": "Overhead shot: Dramatic lighting revealing the outline of something cutting-edge, sleek office gadgets surrounding it, the connection starting to become clearer",
+    "video_prompt": "Revelation beginning: Camera smoothly panning across the tech scene, dynamic lighting intensifying, innovative shape becoming clearer, tech gadgets softly glowing, the connection starting to reveal itself",
+    "include_product": false
+  },
+  {
+    "narration": "That secret? A robot dog that transforms your workspace into an interactive hub.",
+    "image_prompt": "Close-up: Robot dog dramatically revealed among sleek office gadgets, vibrant tech lighting, the suspenseful story now connecting to the product",
+    "video_prompt": "Dramatic reveal: Robot dog smoothly rotating into frame with dynamic tech lighting, sleek gadgets surrounding it, camera pushing in, the suspenseful story now connecting to the product",
+    "include_product": true
+  },
+  {
+    "narration": "Get this innovative robot dog for half the price of Amazon - revolutionize your workspace, link in bio!",
+    "image_prompt": "Hero shot: Robot dog beautifully displayed with tech elements, dynamic lighting, text overlay area suggested, exciting call-to-action composition, the suspenseful story now fully connected",
+    "video_prompt": "Finale movement: Camera dramatically circling around robot dog, tech elements softly glowing, vibrant lighting intensifying, exciting call-to-action motion, completing the suspenseful narrative arc",
+    "include_product": true
+  }
+]
+
+Additionally, provide:
+- musicGenerationPrompt: A detailed description for generating background music that matches the overall mood, theme, and suspenseful narrative arc of all scenes. The music should be instrumental, atmospheric, and enhance the cinematic feel. Describe the desired mood, tempo, and emotional tone that complements the video's story. For tech themes, consider futuristic, innovative, and dynamic musical tones with a sense of discovery and excitement.
+- musicStyle: The music genre/style (e.g., "Ambient", "Cinematic", "Electronic", "Classical", "Dramatic"). Choose a style that matches the overall theme and mood of the video. For tech themes, consider styles like "Futuristic", "Innovative Cinematic", "Dynamic Electronic", or "Discovery".
+- musicTitle: A creative title for the background music track that reflects the video's theme.

@@ -32,9 +32,13 @@ Guidelines:
 - Image prompts should describe the static first frame of the scene with hyper realistic detail
 - Video prompts should describe dynamic actions, movements, and motion (no people) with hyper realistic quality
 - Both image and video prompts should be detailed enough for AI generation and emphasize hyper realistic visuals
-- Create a narrative arc across all scenes
-- Start strong to hook viewers
-- End with a memorable conclusion or call-to-action
+- Create an EXTREMELY SUSPENSEFUL narrative arc across all scenes
+- CRITICAL STORYTELLING APPROACH: Start with a mysterious hook like "Do you know about the story of X?" or "Have you ever heard about X?" that seems completely unrelated to the product
+- Build suspense by exploring this seemingly unrelated story or mystery
+- Create tension and curiosity - make viewers wonder where this is going
+- Gradually reveal connections between the mysterious story and the product
+- The revelation should feel surprising but logical - like a plot twist that ties everything together
+- End with a memorable conclusion that connects the suspenseful story back to the product
 - The final scene should include a call-to-action mentioning that viewers can get the product for half the price of Amazon by going to the link in bio
 - Do NOT include any people, hands, or human subjects in image_prompt or video_prompt - focus on products, objects, environments, and their movements only
 - Video prompts should include dramatic actions: rotations, camera movements, lighting changes, object movements, etc.
@@ -43,42 +47,47 @@ Guidelines:
 Example for topic "The beauty of morning coffee":
 [
   {{
-    "narration": "There's something magical about that first sip of coffee in the morning.",
-    "image_prompt": "Close-up: White ceramic coffee cup on a wooden table, golden morning sunlight streaming through a nearby window creating lens flare, soft focus background, steam visible rising from the cup",
-    "video_prompt": "Slow motion: Steam dramatically rising and swirling from the coffee cup, camera slowly pushing in closer, lens flares dancing across the frame, soft focus background gently shifting",
+    "narration": "Do you know about the story of the ancient monks who discovered the secret to perfect focus?",
+    "image_prompt": "Mysterious wide shot: Ancient monastery ruins silhouetted against dramatic sunrise, mist swirling through stone arches, mysterious and suspenseful atmosphere, no product visible yet",
+    "video_prompt": "Suspenseful tracking: Camera slowly moving through misty ruins, dramatic shadows shifting, mysterious atmosphere building, tension increasing as we explore this seemingly unrelated story",
     "include_product": false
   }},
   {{
-    "narration": "The rich aroma fills the room, waking up your senses.",
-    "image_prompt": "Overhead shot: French press positioned above a coffee cup, dark coffee visible inside, warm ambient lighting, clean composition",
-    "video_prompt": "Dramatic pour: Dark coffee cascading from French press into cup, creating mesmerizing swirls and patterns, camera slowly rotating around the action, steam rising and swirling",
+    "narration": "They spent years searching for something that could sharpen their minds and calm their spirits.",
+    "image_prompt": "Close-up: Ancient scrolls and artifacts on weathered stone surface, dramatic side lighting creating deep shadows, mysterious and intriguing composition",
+    "video_prompt": "Dramatic reveal: Camera slowly pushing in on ancient artifacts, shadows dancing across the scene, mysterious elements shifting, building anticipation about what they discovered",
     "include_product": false
   }},
   {{
-    "narration": "It's not just a drink, it's a ritual.",
-    "image_prompt": "Medium shot: Coffee cup placed on a windowsill with soft morning light streaming through the window, cozy sweater draped nearby, peaceful composition",
-    "video_prompt": "Gentle camera movement: Camera slowly tracking along the windowsill, morning light shifting and dancing across surfaces, steam rising from cup, peaceful and contemplative motion",
+    "narration": "What they found wasn't gold or jewels, but something far more valuable.",
+    "image_prompt": "Medium shot: Dark, mysterious scene with a single beam of light illuminating something hidden in shadows, suspenseful and dramatic lighting",
+    "video_prompt": "Tension building: Camera slowly circling around the mysterious scene, dramatic lighting shifting and revealing hints, shadows moving, suspense intensifying",
     "include_product": false
   }},
   {{
-    "narration": "A moment of peace before the day begins.",
-    "image_prompt": "Wide establishing shot: Cozy kitchen interior with sunrise visible through large windows, coffee setup on counter, plants in background, warm and inviting atmosphere",
-    "video_prompt": "Slow pan: Camera smoothly panning across the kitchen, sunrise light gradually brightening, plants gently swaying, warm and inviting atmosphere with subtle movements",
+    "narration": "It was a ritual that transformed ordinary moments into extraordinary clarity.",
+    "image_prompt": "Overhead shot: Ancient ritual setup with mysterious elements, dramatic lighting creating an aura, the connection starting to become clearer",
+    "video_prompt": "Revelation beginning: Camera smoothly panning across the ritual setup, dramatic lighting intensifying, mysterious elements becoming clearer, the connection starting to reveal itself",
     "include_product": false
   }},
   {{
-    "narration": "Make time for the little things that bring you joy.",
-    "image_prompt": "Close-up: Coffee cup positioned toward camera, steam visible, out of focus greenery in background, inspirational composition",
-    "video_prompt": "Dynamic tracking: Coffee cup slowly rotating and tilting toward camera, steam dramatically rising and swirling, camera tracking around the cup, background gently shifting focus",
+    "narration": "That secret? The perfect cup of coffee, crafted with precision and care.",
+    "image_prompt": "Close-up: Premium coffee cup dramatically revealed in golden light, steam rising mysteriously, the connection now clear - this was the monks' secret",
+    "video_prompt": "Dramatic reveal: Coffee cup rotating into frame with dramatic lighting, steam dramatically rising, camera pushing in, the suspenseful story now connecting to the product",
     "include_product": true
   }},
   {{
-    "narration": "Get this premium coffee setup for half the price of Amazon - check the link in bio!",
-    "image_prompt": "Medium shot: Coffee setup displayed beautifully on counter with product clearly visible, text overlay area suggested, bright and inviting lighting",
-    "video_prompt": "Elegant reveal: Camera slowly circling around the coffee setup, products rotating to show different angles, lighting gradually brightening, smooth and polished movement",
+    "narration": "Get this premium coffee setup for half the price of Amazon - unlock the secret, link in bio!",
+    "image_prompt": "Hero shot: Coffee setup displayed beautifully with dramatic lighting, text overlay area suggested, the suspenseful story now fully connected to the product",
+    "video_prompt": "Finale reveal: Camera dramatically circling around the coffee setup, products rotating, dramatic lighting intensifying, completing the suspenseful narrative arc",
     "include_product": true
   }}
 ]
+
+Additionally, provide:
+- musicGenerationPrompt: A detailed description for generating background music that matches the overall mood, theme, and suspenseful narrative arc of all scenes. The music should be instrumental, atmospheric, and enhance the cinematic feel. Describe the desired mood, tempo, and emotional tone that complements the video's story.
+- musicStyle: The music genre/style (e.g., "Ambient", "Cinematic", "Electronic", "Classical", "Dramatic"). Choose a style that matches the overall theme and mood of the video.
+- musicTitle: A creative title for the background music track that reflects the video's theme.
 
 Return ONLY valid JSON matching this structure. Do not include any markdown formatting or code blocks.
 

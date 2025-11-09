@@ -63,7 +63,7 @@ def _generate_openai_audio(text: str, output_dir: str, voice: str = "nova") -> s
 
 
 def _generate_eleven_labs_audio(
-    text: str, output_dir: str, voice_id: str = "JBFqnCBsd6RMkjVDRZzb"
+    text: str, output_dir: str, voice_id: str = "RXtWW6etvimS8QJ5nhVk"
 ) -> str:
     """Generate TTS audio using ElevenLabs API."""
     if not ELEVEN_LABS_API_KEY:

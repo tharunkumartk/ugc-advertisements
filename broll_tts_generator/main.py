@@ -15,9 +15,12 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from .config import OPENAI_API_KEY, KIE_AI_API_KEY, ELEVEN_LABS_API_KEY
 from .script_generator import generate_broll_script
 from .tts_generator import generate_tts_audio
+from .music_generator import generate_music
 from .video_generator import generate_all_broll_videos
 from .video_combiner import combine_broll_with_audio
 from .prompt_generator import generate_themed_prompt, save_prompt_template
+from .product_image import remove_background
+from .supabase_upload import upload_to_supabase
 
 
 def generate_broll_video_with_tts(
@@ -30,6 +33,10 @@ def generate_broll_video_with_tts(
     max_workers: int = 5,
     dry_run: bool = False,
     use_eleven_labs: bool = False,
+    remove_bg: bool = False,
+    upload_supabase: bool = False,
+    generate_music: bool = True,
+    music_model: str = "V5",
 ) -> Dict:
     """
     Complete B-roll + TTS video generation pipeline.
@@ -44,6 +51,10 @@ def generate_broll_video_with_tts(
         max_workers: Maximum number of parallel workers for video generation (default: 5)
         dry_run: If True, skip video generation and use images extended to 10 seconds (default: False)
         use_eleven_labs: If True, use ElevenLabs API for TTS instead of OpenAI (default: False)
+        remove_bg: If True, remove background from product image before processing (default: False)
+        upload_supabase: If True, upload final video to Supabase bucket (default: False)
+        generate_music: If True, generate background music (default: True)
+        music_model: AI model version for music generation (V3_5, V4, V4_5, V4_5PLUS, V5) (default: V5)
 
     Returns:
         Dictionary with paths to generated files
@@ -64,6 +75,26 @@ def generate_broll_video_with_tts(
         print("=" * 60 + "\n")
 
     try:
+        # Step 0: Remove background if requested (before any other processing)
+        # This updated product_image_path will be used for ALL product image generation
+        # including nano banana and other product placement images
+        if remove_bg:
+            print("\n" + "=" * 60)
+            print("REMOVING BACKGROUND FROM PRODUCT IMAGE")
+            print("=" * 60)
+            bg_removed_path = os.path.join(output_dir, "product_bg_rm.png")
+            print(f"Removing background from: {product_image_path}")
+            try:
+                remove_background(product_image_path, bg_removed_path)
+                product_image_path = bg_removed_path  # Update to use bg-removed version for all subsequent operations
+                print(f"✓ Background removed. Using: {product_image_path}")
+                print("  This image will be used for all product image generation.")
+                results["bg_removed_image_path"] = bg_removed_path
+            except Exception as e:
+                print(f"⚠️  Warning: Failed to remove background: {e}")
+                print("Continuing with original product image...")
+            print("=" * 60 + "\n")
+
         # Step 1: Generate script
         script_data = generate_broll_script(topic, num_scenes, prompt_file=prompt_file)
         script_path = os.path.join(output_dir, f"broll_script_{timestamp}.json")
@@ -81,6 +112,50 @@ def generate_broll_video_with_tts(
         )
         results["tts_audio_path"] = tts_audio_path
 
+        # Step 2.5: Generate background music (if enabled)
+        background_music_path = None
+        if generate_music:
+            try:
+                music_prompt = script_data.get("musicGenerationPrompt", "")
+                music_style = script_data.get("musicStyle", "Ambient")
+                music_title = script_data.get("musicTitle", "Background Music")
+
+                if music_prompt:
+                    # Get TTS audio duration to generate music of appropriate length
+                    import subprocess
+
+                    cmd = [
+                        "ffprobe",
+                        "-v",
+                        "error",
+                        "-show_entries",
+                        "format=duration",
+                        "-of",
+                        "default=noprint_wrappers=1:nokey=1",
+                        tts_audio_path,
+                    ]
+                    result = subprocess.run(
+                        cmd, capture_output=True, text=True, check=True
+                    )
+                    narration_duration = float(result.stdout.strip())
+
+                    background_music_path = generate_music(
+                        music_prompt=music_prompt,
+                        style=music_style,
+                        title=music_title,
+                        output_dir=output_dir,
+                        duration_seconds=narration_duration,
+                        model=music_model,
+                    )
+                    results["background_music_path"] = background_music_path
+                else:
+                    print(
+                        "⚠️  Warning: No musicGenerationPrompt in script data, skipping music generation"
+                    )
+            except Exception as e:
+                print(f"⚠️  Warning: Failed to generate background music: {e}")
+                print("Continuing without background music...")
+
         # Step 3: Generate B-roll videos (in parallel)
         broll_paths = generate_all_broll_videos(
             script_data,
@@ -94,19 +169,32 @@ def generate_broll_video_with_tts(
         if not broll_paths:
             raise Exception("No B-roll videos were generated successfully")
 
-        # Step 4: Combine B-roll with audio
+        # Step 4: Combine B-roll with audio (and background music if available)
         # Extract prompt name from prompt_file path (e.g., "prompts/default_prompt.txt" -> "default_prompt")
         prompt_name = Path(prompt_file).stem
         final_video_path = os.path.join(
             output_dir, f"final_{prompt_name}_{timestamp}.mp4"
         )
-        combine_broll_with_audio(broll_paths, tts_audio_path, final_video_path)
+        combine_broll_with_audio(
+            broll_paths,
+            tts_audio_path,
+            final_video_path,
+            background_music_path=background_music_path,
+        )
         results["final_video_path"] = final_video_path
+
+        # Upload to Supabase if requested
+        if upload_supabase:
+            public_url = upload_to_supabase(final_video_path)
+            if public_url:
+                results["supabase_url"] = public_url
 
         print("\n" + "=" * 60)
         print("✓ VIDEO GENERATION COMPLETE!")
         print("=" * 60)
         print(f"Final video: {final_video_path}")
+        if upload_supabase and results.get("supabase_url"):
+            print(f"Supabase URL: {results['supabase_url']}")
 
         return results
 
@@ -185,6 +273,28 @@ def main():
         action="store_true",
         help="Use ElevenLabs API for TTS instead of OpenAI (requires ELEVEN_LABS_API_KEY)",
     )
+    parser.add_argument(
+        "--remove-background",
+        action="store_true",
+        help="Remove background from product image using Gemini 2.5 Flash before processing (saves as product_bg_rm.png)",
+    )
+    parser.add_argument(
+        "--upload-supabase",
+        action="store_true",
+        help="Upload final video to Supabase bucket 'generated-ugc' (requires SUPABASE_KEY environment variable)",
+    )
+    parser.add_argument(
+        "--no-music",
+        action="store_true",
+        help="Disable background music generation (music is enabled by default)",
+    )
+    parser.add_argument(
+        "--music-model",
+        type=str,
+        default="V5",
+        choices=["V3_5", "V4", "V4_5", "V4_5PLUS", "V5"],
+        help="AI model version for music generation (default: V5)",
+    )
 
     args = parser.parse_args()
 
@@ -192,7 +302,7 @@ def main():
     if args.voice is None:
         if args.eleven_labs:
             # Default ElevenLabs voice_id (you can change this to any voice_id you prefer)
-            args.voice = "JBFqnCBsd6RMkjVDRZzb"
+            args.voice = "RXtWW6etvimS8QJ5nhVk"
             print(f"🎲 Using default ElevenLabs voice_id: {args.voice}")
         else:
             available_voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
@@ -214,8 +324,17 @@ def main():
     else:
         if not OPENAI_API_KEY:
             missing_keys.append("OPENAI_API_KEY")
-    if not args.dry_run and not KIE_AI_API_KEY:
-        missing_keys.append("KIE_AI_API_KEY")
+    # KIE_AI_API_KEY needed for video generation (unless dry run) or music generation
+    needs_kie_api = (not args.dry_run) or (not args.no_music)
+    if needs_kie_api and not KIE_AI_API_KEY:
+        if not args.dry_run and not args.no_music:
+            missing_keys.append(
+                "KIE_AI_API_KEY (required for video and music generation)"
+            )
+        elif not args.dry_run:
+            missing_keys.append("KIE_AI_API_KEY (required for video generation)")
+        else:
+            missing_keys.append("KIE_AI_API_KEY (required for music generation)")
 
     if missing_keys:
         print(f"⚠️  Missing required API keys: {', '.join(missing_keys)}")
@@ -282,6 +401,10 @@ def main():
                     max_workers=args.max_workers,
                     dry_run=args.dry_run,
                     use_eleven_labs=args.eleven_labs,
+                    remove_bg=args.remove_background,
+                    upload_supabase=args.upload_supabase,
+                    generate_music=not args.no_music,
+                    music_model=args.music_model,
                 ): prompt_file.name
                 for prompt_file in prompt_files
             }
@@ -364,6 +487,10 @@ def main():
         max_workers=args.max_workers,
         dry_run=args.dry_run,
         use_eleven_labs=args.eleven_labs,
+        remove_bg=args.remove_background,
+        upload_supabase=args.upload_supabase,
+        generate_music=not args.no_music,
+        music_model=args.music_model,
     )
 
     if "error" in results:
